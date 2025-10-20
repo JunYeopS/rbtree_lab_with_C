@@ -1,6 +1,8 @@
 # 📘 Docker + VSCode DevContainer 기반 C 개발 환경 구축 가이드 (RBTree)
 
-이 문서는 **Windows**와 **macOS** 사용자가 Docker와 VSCode DevContainer 기능을 활용하여 C 개발 및 디버깅 환경을 빠르게 구축할 수 있도록 도와줍니다.
+## 📘 0. 개요 (전체 목적 요약)
+
+이 프로젝트는 Red-Black Tree 자료구조를 C언어로 직접 구현하고, Docker + VSCode DevContainer를 활용하여 OS에 관계없이 일관된 개발/디버깅 환경을 제공하는 것을 목표로 합니다.
 
 ---
 
@@ -138,3 +140,58 @@ git push -u origin main
 - VSCode 내에서 코드 작성, 컴파일, 디버깅까지 한 번에 가능
 
 ---
+# 🚀 실행 방법
+## DevContainer에서 실행 후, 아래 명령어로 테스트 실행
+```bash
+cd rbtree_lab
+make test
+```
+
+make test는 src 디렉토리의 RBTree 구현 코드를 컴파일하고, test 디렉토리의 테스트 케이스를 실행합니다.
+
+VSCode 내에서 F5를 눌러 디버깅도 가능합니다.
+### 🌲 구현 기능 요약 (Red-Black Tree)
+
+| 기능 | 설명 |
+| --- | --- |
+| 트리 초기화 | `new_rbtree()` |
+| 노드 삽입 | `rbtree_insert()` + `insert_fixup()` |
+| 노드 삭제 | `rbtree_erase()` + `rb_delete_fixup()` |
+| 트리 회전 | `left_rotate()`, `right_rotate()` |
+| 삭제 보조 | `rb_transplant()` |
+| 색상 관리 | `enum color_t { RBTREE_RED, RBTREE_BLACK }` |
+| NIL sentinel | 모든 NULL 포인터 대신 사용되는 고정 BLACK 노드 |
+
+### 🔧 주요 함수 설명
+`new_rbtree()`
+
+- RBTree 초기화
+- NIL 노드 생성 후 root에 연결
+
+`rbtree_insert()`
+
+- BST처럼 삽입 후 `insert_fixup()`으로 색/회전 조정
+
+`insert_fixup()`
+
+- RED-RED 위반 수정 (Case 1~3)
+- 회전과 색상 변경으로 트리 균형 유지
+
+`rbtree_erase()`
+
+- 노드 삭제
+- 후계자(successor)를 찾아 `rb_transplant()`로 위치 교체
+- 삭제된 노드가 BLACK이면 `rb_delete_fixup()` 호출
+
+`rb_delete_fixup()`
+
+- double black 상태 처리 (Case 1~4)
+- 형제의 색상/자식 상태에 따라 회전 및 색상 조정
+
+`rb_transplant()`
+
+- `d` 자리에 `a`를 대체 연결
+
+`left_rotate()`, `right_rotate()`
+
+- 부모-자식 포인터 재연결을 통해 트리 구조 회전
